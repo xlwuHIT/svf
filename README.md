@@ -71,8 +71,6 @@ $ svf ... -o <*.txt>
 
 * bedtools 2.25.0 or later
 
-[:notebook: Usage Documentation](https://github.com/dantaki/SV2/wiki/usage)
-
 ---
 
 ## Contact
