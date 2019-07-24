@@ -1,4 +1,4 @@
-gg
+
 # Structural Variation Filter
 
 ---
