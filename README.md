@@ -30,16 +30,15 @@ $ wget https://github.com/xueyeduzhuo/svf/archive/master.zip
 # decompress it on your server
 $ unzip svf-master.zip
 
-# rename it as svf
-$ mv svf-master svf
+# enter svf master
+$ cd svf-master
 
 ```
 
 ### Run svf
 
 ```
-$ cd svf
-
+# under svf master directory
 $ ./svf.sh
 or
 $ python svf.py feature -b <*.bam> -c <*.vcf.gz>  -v <*.vcf.gz> -o <*_feature.txt> -g hg19 -f <*.fa>
