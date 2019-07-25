@@ -6,7 +6,7 @@
 
 * [User Guide](#user-guide)
    * [Configuration](#configuration)
-   * [Run] (#run-svf)
+   * [Run](#run-svf)
    * [Input](#input)
    * [Output](#output)
 * [Requirements](#requirements)
