@@ -2,6 +2,15 @@
 # Structural Variation Filter
 
 ---
+## Table of Contents
+
+* [User Guide](#user-guide)
+   * [Configuration](#configuration)
+   * [Input](#input)
+   * [Output](#output)
+* [Requirements](#requirements)
+* [Contact](#contact)
+---
 
 ![alt text](./figure/framework.png  "Structural Variation Filter Framework")
 
