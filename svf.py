@@ -3,10 +3,7 @@
 import argparse
 from Sample import *
 from multiprocessing import Pool
-from sklearn.linear_model import LogisticRegression
-from sklearn.externals import joblib
-from sklearn.model_selection import train_test_split
-import numpy as np
+from Model import *
 
 def feature(args):
 	mytime('feature construction start')
@@ -20,13 +17,12 @@ def feature(args):
 
 
 def train(args):
-	mytime('train start')
-	f=open('NA12878_feature.txt','r')
-	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
-	LR = LogisticRegression(C=1.0, penalty='l1', tol=0.01,solver='liblinear',multi_class='auto')
-	LR.fit(X_train,y_train)
-	print LR.score(X_test,y_test)
-	joblib.dump(LR,'model.pkl')
+	targets=np.loadtxt(args.f,skiprows=1,dtype=str,delimiter='\t',)
+	del_group=np.array([l for l in targets if l[4]=='DEL'])
+	dup_group=np.array([l for l in targets if l[4]=='DUP'])
+
+	#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+	
 
 
 
@@ -82,6 +78,7 @@ train_parser.add_argument('-f',required=True)
 train_parser.add_argument('-m',required=False)
 train_parser.add_argument('-o')
 train_parser.set_defaults(function=train)
+
 
 #genotype
 genotype_parser=sub_parsers.add_parser('genotype')

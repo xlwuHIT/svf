@@ -43,6 +43,22 @@ class Bam():
 				rpkm[i]=10**9*nreads*1.0/npos/self._total_reads
 		return rpkm
 
+	def rpkm2(self,sv):
+		rpkm={}
+		for target in sv._svs:
+			nreads=0
+			npos=0
+			reads=self._fp.fetch(self._chr_prefix+target[0],int(target[1]),int(target[2]))
+			npos+=int(target[2])-int(target[1])
+			for read in reads:
+				if self.checkRead(read)==2:
+					nreads+=1
+			if npos==0:
+				rpkm[target[-1]]=0
+			else:
+				rpkm[target[-1]]=10**9*nreads*1.0/npos/self._total_reads
+		return rpkm
+
 
 	def coverage(self,sv,length=0):
 		coverage={}
@@ -81,6 +97,24 @@ class Bam():
 			rlength[i]=median(length)
 		return (isize,rlength)
 
+	def SL2(self,sv,count=10000):
+		isize={}
+		rlength={}
+		for target in sv._svs:
+			ct=0
+			size=[]
+			length=[]
+			reads=self._fp.fetch(self._chr_prefix+target[0],int(target[1]),int(target[2]))
+			for read in reads:
+				if self.checkRead(read)==2:
+					ct+=1
+					size.append(abs(read.template_length))
+					length.append(read.query_alignment_length)
+					if ct>count:
+						break
+			isize[target[-1]]=median(size)+3*std(size)
+			rlength[target[-1]]=median(length)
+		return (isize,rlength)
 
 	def checkRead(self,read,mq=10):
 		if read.is_duplicate or read.reference_id!=read.next_reference_id or read.is_qcfail or read.is_reverse==read.mate_is_reverse or read.is_unmapped or read.mate_is_unmapped:
@@ -100,6 +134,34 @@ class Bam():
 			flank=sv._flank1[i]+sv._flank2[i] if sv._flank1.get(i)!=None and sv._flank2.get(i)!=None else []
 			for target in flank:
 				reads=self._fp.fetch(self._chr_prefix+target[0],int(target[1]),int(target[2]))
+				for read in reads:
+					if self.checkRead(read)==0:
+						continue
+					elif self.checkRead(read)==2:
+						ncon+=1
+					else:
+						if read.is_paired:
+							if (read.template_length>thr and (abs(read.reference_start-int(sv._svs[int(i)][1]))<expan and abs(read.next_reference_start-int(sv._svs[int(i)][2]))<expan 
+							or abs(read.reference_start-int(sv._svs[int(i)][2]))<expan and abs(read.next_reference_start-int(sv._svs[int(i)][1]))<expan)):
+								ndis+=1
+						if read.is_secondary or read.is_supplementary:
+							align = read.get_tag("SA").split(',')
+							if (align[0]==read.reference_name and (abs(read.reference_start-int(sv._svs[int(i)][1]))<expan and abs(int(align[1])-int(sv._svs[int(i)][2]))<expan 
+							or abs(read.reference_start-int(sv._svs[int(i)][2]))<expan and abs(int(align[1])-int(sv._svs[int(i)][1]))<expan)):
+								nsp+=1
+			discordant[i]=(ndis,nsp,ncon)
+		return discordant
+
+	def discordant2(self,sv,thr,expan=500):
+		discordant={}
+		for target in sv._svs:
+			i=target[-1]
+			ndis=0
+			ncon=0
+			nsp=0
+			flank=[sv._flank1[int(i)],sv._flank2[int(i)]] 
+			for tar in flank:
+				reads=self._fp.fetch(self._chr_prefix+tar[0],int(tar[1]),int(tar[2]))
 				for read in reads:
 					if self.checkRead(read)==0:
 						continue

@@ -4,32 +4,35 @@ from collections import OrderedDict
 
 
 class SV():
-    def __init__(self,bed_file,sample_name=None,gt='hg19',gf=None,sample_flag=False):
+    def __init__(self,file,sample_name=None,gt='hg19',gf=None,sample_flag=False,expansion=500):
         self._gt=gt
         self._sample_flag=sample_flag
         if sample_flag:
 
-            svs,flank1,flank2=self.makeTargets(bed_file,sample_name)
+            svs,flank1,flank2=self.makeTargets(file,sample_name)
             self._svs=BedTool(svs)
             self._svdict=self.filter(self._svs)
             self._gf=gf
-            flank1=self.expand(flank1,500)
-            flank2=self.expand(flank2,500)
+            self._flank1=self.expand(flank1,expansion)
+            self._flank2=self.expand(flank2,expansion)
             #print flank1[10069]
-            self._flank1=self.filter(flank1)
-            self._flank2=self.filter(flank2)
-            self._GC=self.gcContent(self._svdict,5)
+            #self._flank1=self.filter(flank1)
+            #self._flank2=self.filter(flank2)
+            #self._GC=self.gcContent(self._svdict,5)
             self._RLCR=self.rlcrPercent()
         else:
             #svs=BedTool().random(l=100000,n=2400,g='config/'+self._gt+'.genome')
-            svs=BedTool(bed_file)
-            self._svdict=self.filter(svs)
+            self._svs=BedTool(file)
+            #self._svdict=self.filter(svs)
 
     def makeTargets(self,file,sample_name):
         if file.endswith('bed'):
             return self.makeTargetsBed(file,sample_name)
         elif file.endswith('vcf.gz'):
             return self.makeTargetsVcf(file,sample_name)
+        else:
+            print 'incorrect format!'
+            exit(1)
 
     def makeTargetsBed(self,bed_file,sample_name):
         with open(bed_file,'r') as fp:
@@ -45,7 +48,7 @@ class SV():
             targets_flank2=[]
             for i in xrange(nlines):
                 info=re.split('\t| ',lines[i].strip())
-                #chr20   51908751   51917850    dup    NA12878   index
+                #chr20   51908751   51917850    DUP    NA12878   index
                 ncol=len(info)
                 if ncol<3:
                     print 'Invalid bed format!'
@@ -58,7 +61,7 @@ class SV():
                         targets_flank2.append((info[0],info[2],info[2],info[3],i-nskip))
                 elif info[4]==sample_name:
                     info[0]=info[0].replace('chr','').replace('23','X').replace('24','Y')
-                    targets.append(tuple(info[:4]+[i-nskip]))
+                    targets.append(tuple(info+[i-nskip]))
                     if self._sample_flag:
                         targets_flank1.append((info[0],info[1],info[1],info[3],i-nskip))
                         targets_flank2.append((info[0],info[2],info[2],info[3],i-nskip))
@@ -114,14 +117,17 @@ class SV():
 
     def rlcrPercent(self):
         rlcr={} #repetitive and low complexity region
-        for i in self._svdict:
-            if len(self._svdict[i])==1:
+        for target in self._svs:
+            i=target[-1]
+            if self._svdict.get(i)==None:
+                rlcr[i]=1
+            elif len(self._svdict[i])==1:
                 rlcr[i]=0
-                continue
-            nbps=0
-            for target in self._svdict[i]:
-                nbps+=int(target[2])-int(target[1])
-            rlcr[i]=1-nbps*1.0/(int(self._svs[int(i)][2])-int(self._svs[int(i)][1]))
+            else:
+                nbps=0
+                for target in self._svdict[i]:
+                    nbps+=int(target[2])-int(target[1])
+                rlcr[i]=1-nbps*1.0/(int(self._svs[int(i)][2])-int(self._svs[int(i)][1]))
         return rlcr
 
 

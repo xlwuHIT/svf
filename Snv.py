@@ -42,6 +42,37 @@ class Snv():
 			snv_dict[i]=(median(deps),len(deps),median(ratio),len(ratio))
 		return snv_dict
 
+	def snv2(self,sv):
+		snv_dict={}
+		for target in sv._svs:
+			i=target[-1]
+			deps=[]
+			ratio=[]
+			snvs=self._fp.fetch(self._chr_prefix+target[0],int(target[1]),int(target[2]))
+			for snv in snvs:
+				try:
+					sample_genotype=snv.genotype(self._name)
+					if sample_genotype.gt_type==None:
+						continue
+					#print sample_genotype
+					deps.append(sample_genotype['DP'])
+					if sample_genotype.is_het:
+						if self._format=='AD':
+							a0=sample_genotype['AD'][-2]
+							a1=sample_genotype['AD'][-1]
+						else:
+							a0=sample_genotype['RO']
+							a1=sample_genotype['AO']
+						#print sample_genotype
+						if a0==0:
+							ratio.append(float('inf'))
+						else:
+							ratio.append(a1*1.0/a0)
+				except:
+					pass
+			snv_dict[i]=(median(deps),len(deps),median(ratio),len(ratio))
+		return snv_dict
+
 
 	def vcfFormat(self):
 		tmp=self._fp.next()
