@@ -46,6 +46,7 @@ class Model():
 				f.write(str(coefs[i])+'\t')
 			f.write(str(intercept)+'\n')
 		f.close()
+		print 'qq'
 
 	
 	def Test(self,x):
