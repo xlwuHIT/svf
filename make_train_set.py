@@ -77,7 +77,7 @@ print 'dsv'
 dsv=makeTargetsVcf(dell,'NA12878')
 print len(dsv)
 f=open('train_set.bed','w')
-f.write('chromsome\tstart\tend\tgenotpe\tsample\tcategory\n')
+f.write('chromsome\tstart\tend\tgenotype\tsample\tcategory\n')
 make_trains(sv,lsv,'NA12878',f)
 make_trains(sv,dsv,'NA12878',f)
 f.close()

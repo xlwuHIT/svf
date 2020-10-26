@@ -1,4 +1,4 @@
-chromsome	start	end	genotpe	sample	category
+chromsome	start	end	genotype	sample	category
 1	724849	224202328	DUP	NA12878	0
 1	869481	870248	DEL	NA12878	0
 1	1285399	1286794	DEL	NA12878	0

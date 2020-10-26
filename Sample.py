@@ -45,13 +45,13 @@ class Sample():
 		print 'tagcnv'
 		self._sample['tagcnv']=self.tagCnvPercent2()
 		
-		
+
 		if len(self._sv_sample._svs[0].fields)<7:
 			print 'write test'
-			self.write_features_test(output_file)
+			self.write_features_test2(output_file)
 		else:
 			print 'write train'
-			self.write_features_train(output_file)
+			self.write_features_train2(output_file)
 
 
 	def getGC(self,choice):
@@ -160,10 +160,48 @@ class Sample():
 	def write_features_train(self,output_file):
 		#features=['coverage','GCcoverage','ndiscordant','nsplit','nconcordant','nsnvs','snv_coverage','nhets','allele_ratio']
 		op=open(output_file,'w')
-		op.write('chromosome\tstart\tend\tlength\tgenotype\tcategory\trpkm\tndiscordant\tnsplit\tnconcordant\tsnv_coverage\tnsnvs\tallele_ratio\tnhets\tRLCR\ttagCNV\n')
+		op.write('chromosome\tstart\tend\tlength\tgenotype\tsample\tcategory\trpkm\tndiscordant\tnsplit\tnconcordant\tsnv_coverage\tnsnvs\tallele_ratio\tnhets\tRLCR\ttagCNV\n')
 		for i in self._sv_sample._svdict:
 			s=self._sv_sample._svs[int(i)][0]+'\t'+self._sv_sample._svs[int(i)][1]+'\t'+self._sv_sample._svs[int(i)][2]
-			s+='\t'+str(int(self._sv_sample._svs[int(i)][2])-int(self._sv_sample._svs[int(i)][1]))+'\t'+self._sv_sample._svs[int(i)][3]+self._sv_sample._svs[int(i)][-2]
+			s+='\t'+str(int(self._sv_sample._svs[int(i)][2])-int(self._sv_sample._svs[int(i)][1]))+'\t'+self._sv_sample._svs[int(i)][3]+'\t'+self._sv_sample._svs[int(i)][4]+'\t'+self._sv_sample._svs[int(i)][5]
+			#s+='\t'+str(self._sample['rpkm'][i])+'\t'+str(self._sample['rpkm'][i]*self._gc[self._sv_sample._GC[i]])
+			s+='\t'+str(self._sample['rpkm'][i])
+			for j in range(3):
+				s+='\t'+str(self._sample['discordant'][i][j])
+			for j in range(4):
+				s+='\t'+str(self._sample['snvcov'][i][j])
+			s+='\t'+str(self._sv_sample._RLCR[i])
+			s+='\t'+str(self._sample['tagcnv'][i])
+			op.write(s+'\n')
+		op.close()
+
+	def write_features_test2(self,output_file):
+		#features=['coverage','GCcoverage','ndiscordant','nsplit','nconcordant','nsnvs','snv_coverage','nhets','allele_ratio']
+		op=open(output_file,'w')
+		op.write('chromosome\tstart\tend\tlength\tgenotype\trpkm\tndiscordant\tnsplit\tnconcordant\tsnv_coverage\tnsnvs\tallele_ratio\tnhets\tRLCR\ttagCNV\n')
+		for target in self._sv_sample._svs:
+			i=target[-1]
+			s=self._sv_sample._svs[int(i)][0]+'\t'+self._sv_sample._svs[int(i)][1]+'\t'+self._sv_sample._svs[int(i)][2]
+			s+='\t'+str(int(self._sv_sample._svs[int(i)][2])-int(self._sv_sample._svs[int(i)][1]))+'\t'+self._sv_sample._svs[int(i)][3]
+			#s+='\t'+str(self._sample['rpkm'][i])+'\t'+str(self._sample['rpkm'][i]*self._gc[self._sv_sample._GC[i]])
+			s+='\t'+str(self._sample['rpkm'][i])
+			for j in range(3):
+				s+='\t'+str(self._sample['discordant'][i][j])
+			for j in range(4):
+				s+='\t'+str(self._sample['snvcov'][i][j])
+			s+='\t'+str(self._sv_sample._RLCR[i])
+			s+='\t'+str(self._sample['tagcnv'][i])
+			op.write(s+'\n')
+		op.close()
+
+	def write_features_train2(self,output_file):
+		#features=['coverage','GCcoverage','ndiscordant','nsplit','nconcordant','nsnvs','snv_coverage','nhets','allele_ratio']
+		op=open(output_file,'w')
+		op.write('chromosome\tstart\tend\tlength\tgenotype\tsample\tcategory\trpkm\tndiscordant\tnsplit\tnconcordant\tsnv_coverage\tnsnvs\tallele_ratio\tnhets\tRLCR\ttagCNV\n')
+		for target in self._sv_sample._svs:
+			i=target[-1]
+			s=self._sv_sample._svs[int(i)][0]+'\t'+self._sv_sample._svs[int(i)][1]+'\t'+self._sv_sample._svs[int(i)][2]
+			s+='\t'+str(int(self._sv_sample._svs[int(i)][2])-int(self._sv_sample._svs[int(i)][1]))+'\t'+self._sv_sample._svs[int(i)][3]+'\t'+self._sv_sample._svs[int(i)][4]+'\t'+self._sv_sample._svs[int(i)][5]
 			#s+='\t'+str(self._sample['rpkm'][i])+'\t'+str(self._sample['rpkm'][i]*self._gc[self._sv_sample._GC[i]])
 			s+='\t'+str(self._sample['rpkm'][i])
 			for j in range(3):

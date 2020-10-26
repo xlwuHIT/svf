@@ -83,7 +83,7 @@ class SV():
                 targets_flank1.append((sv.CHROM,sv.POS,sv.POS,sv.INFO['SVTYPE'],i))
                 targets_flank2.append((sv.CHROM,sv.INFO['END'],sv.INFO['END'],sv.INFO['SVTYPE'],i))
                 i+=1
-
+            #chr20   51908751   51917850    DUP    index    
         return targets,targets_flank1,targets_flank2
 
     def expand(self,svs,nbp):
